@@ -43,7 +43,23 @@ import topBar from '../components/topBar'
       },
       methods: {
         login() {
+          let id = this.login_form.id;
+          let password = this.login_form.password;
 
+          let self = this;
+          this.$axios.get('/user/login',{
+            params: {
+              userId: id,
+              password: password
+            }
+          }).then(function(res) {
+            if(res.data === "成功") {
+              self.$router.push({name:'mainPage'})
+              localStorage.userId = id;
+            }
+          }).catch(function(error) {
+            console.log(error);
+          })
         }
       }
     }

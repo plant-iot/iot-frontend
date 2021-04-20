@@ -2,21 +2,22 @@
   <div class="menu">
   
     <el-menu
-      default-active="2"
+      default-active="1"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
+      :router="routerBool"
+      @select="handleSelect"
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#ffd04b"
     >
-      <el-menu-item index="1">
+      <el-menu-item index="/mainPage">
         <i class="el-icon-menu"></i>
         <span slot="title">设备列表</span>
+        
       </el-menu-item>
-      <el-menu-item index="2">
+      <el-menu-item index="/">
         <i class="el-icon-document"></i>
-        <span slot="title">导航二</span>
+        <span slot="title">设备管理</span>
       </el-menu-item>
       <el-menu-item index="3">
         <i class="el-icon-setting"></i>
@@ -28,7 +29,18 @@
 
 <script>
 export default {
-  name: 'leftBar'
+  name: 'leftBar',
+  data(){
+    return {
+      routerBool:true
+    }
+  },
+  methods: {
+    handleSelect(key, keyPath) {
+      console.log(key);
+      this.$emit("menuChange", key);
+    }
+  }
 }
 </script>
 
