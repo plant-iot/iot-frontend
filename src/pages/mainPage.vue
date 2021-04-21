@@ -26,7 +26,7 @@ export default {
     // this.userId = this.$route.params.id;
     this.userId = parseInt(localStorage.userId);
     console.log("userId:" + this.userId);
-    this.pre_work();
+    this.get_device_log_list();
   },
   data() {
     return {
@@ -37,11 +37,6 @@ export default {
     }
   },
   methods: {
-
-    async pre_work() {
-      await this.get_device_log_list();
-      await this.get_device_list();
-    },
 
     get_device_list() {
       this.device_table = [];
@@ -80,15 +75,10 @@ export default {
           userId: id,
         }
       }).then(function(res) {
-        // for(let data of res.data) {
-        //   let temp = {
-        //     id: data.id,
-        //     itemList: data.itemList
-        //   }
-        //   self.log_list.push(temp);
-        // }
         self.log_list = res.data;
         console.log(self.log_list);
+
+        self.get_device_list();
       }).catch(function(error) {
         console.error(error);
       })

@@ -74,6 +74,7 @@
               <el-radio v-model="device_form.type" label="executor">执行器</el-radio>
             </el-form-item>
             <el-form-item label=物模型模板>
+              <el-radio v-for="(item, index) in service_list" :key="index" v-model="thingModel" :label="item">{{item}}</el-radio>
             </el-form-item>
           </el-form> 
           <div v-show="isExecute">
@@ -109,7 +110,7 @@ export default {
       device_form: {
         name: '',
         type: '',
-        thingModelId: '',
+        thingModel: '',
       },
       service_list: []
     }
@@ -150,6 +151,11 @@ export default {
         console.error(error);
       })
     },
+
+    get_thing_models() {
+      
+    },
+
     create_device() {
       let self = this;
       let userId = parseInt(localStorage.userId);
