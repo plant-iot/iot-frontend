@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>数据分析</title>
+  <style type="text/css">
+    /*表格样式*/
+    table {
+      width: 90%;
+      background: #ccc;
+      margin: 10px auto;
+      border-collapse: collapse; /*border-collapse:collapse合并内外边距(去除表格单元格默认的2个像素内外边距*/
+    }
+
+    caption {
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      height: 25px;
+      line-height: 25px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background: #eee;
+      font-weight: normal;
+    }
+
+    tr {
+      background: #fff;
+    }
+
+    tr:hover {
+      background: #cc0;
+    }
+
+    td a {
+      color: #06f;
+      text-decoration: none;
+    }
+
+    td a:hover {
+      color: #06f;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<table>
+  <tr>
+    <!-- th为表格标题栏-->
+    <caption>统计</caption>
+    <th></th>
+    <th></th>
+    <th>VAR00002</th>
+    <th>VAR00003</th>
+  </tr>
+  <tr>
+    <td>个案数</td>
+    <td>有效</td>
+    <td>2</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td>缺失</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+</table>
+<br>
+<table>
+  <tr>
+    <caption>VAR00002频率统计</caption>
+    <th></th>
+    <th>频率</th>
+    <th>百分比</th>
+    <th>有效百分比</th>
+    <th>累积百分比</th>
+  </tr>
+  <tr><td>12.0</td><td>1</td><td>50.0</td><td>50.0</td><td>50.0</td></tr><tr><td>14.0</td><td>1</td><td>50.0</td><td>50.0</td><td>100.0</td></tr>
+</table>
+<br>
+<table border="1" style="text-align: center">
+  <tr>
+    <caption>VAR00003频率统计</caption>
+    <th></th>
+    <th>频率</th>
+    <th>百分比</th>
+    <th>有效百分比</th>
+    <th>累积百分比</th>
+  </tr>
+  <tr><td>1.0</td><td>1</td><td>0.5</td><td>0.5</td><td>0.5</td></tr><tr><td>33.0</td><td>1</td><td>0.5</td><td>0.5</td><td>1.0</td></tr>
+</table>
+<br>
+<table>
+  <caption>描述统计</caption>
+  <th> </th>
+  <th>N</th>
+  <th>最小值</th>
+  <th>最大值</th>
+  <th>平均值</th>
+  <th>标准差</th>
+  </tr>
+  <tr>
+    <td>VAR00002</td>
+    <td>2</td>
+    <td>12.00</td>
+    <td>14.00</td>
+    <td>13.00</td>
+    <td>1.41</td>
+  </tr>
+  <tr>
+    <td>VAR00003</td>
+    <td>2</td>
+    <td>1.00</td>
+    <td>33.00</td>
+    <td>17.00</td>
+    <td>22.63</td>
+  </tr>
+  <tr>
+    <td>有效个案数（成列）</td>
+    <td>2</td>
+    <td> </td>
+    <td> </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+</table>
+</body>
+</html>
