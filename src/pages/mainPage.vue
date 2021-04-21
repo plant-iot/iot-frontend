@@ -26,16 +26,22 @@ export default {
     // this.userId = this.$route.params.id;
     this.userId = parseInt(localStorage.userId);
     console.log("userId:" + this.userId);
-    this.get_device_list();
+    this.pre_work();
   },
   data() {
     return {
       meun_index: 1,
       userId: 0,
+      log_list: [],
       device_table: []
     }
   },
   methods: {
+
+    async pre_work() {
+      await this.get_device_log_list();
+      await this.get_device_list();
+    },
 
     get_device_list() {
       this.device_table = [];
@@ -46,19 +52,45 @@ export default {
           userId: userId
         }
       }).then(function(res) {
-        for(let data of res.data) {
+        for(let i = 0; i < res.data.length; i++) {
+          let data = res.data[i];
+          let log = self.log_list[i];
           let temp = {
             id:data.id,
             name: data.name,
             type: data.type,
             onOff: data.onOff,
             state: data.state,
+            log: log.itemList
           }
           console.log(data);
           self.device_table.push(temp);
         }
       }).catch(function(error) {
         console.log(error);
+      })
+    },
+
+    get_device_log_list() {
+      let id = parseInt(localStorage.userId);
+
+      let self = this;
+      this.$axios.get('/deviceinfo/getDeviceLogList', {
+        params: {
+          userId: id,
+        }
+      }).then(function(res) {
+        // for(let data of res.data) {
+        //   let temp = {
+        //     id: data.id,
+        //     itemList: data.itemList
+        //   }
+        //   self.log_list.push(temp);
+        // }
+        self.log_list = res.data;
+        console.log(self.log_list);
+      }).catch(function(error) {
+        console.error(error);
       })
     }
   }

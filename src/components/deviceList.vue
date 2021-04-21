@@ -7,6 +7,16 @@
       <el-table
       :data="device_table"
       style="width: 100%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item v-for="(item, index) in props.row.log" :key="index">
+              <span>{{ item.action}}</span> <span>{{item.time}}</span>
+            </el-form-item>
+            
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="name"
         label="设备名称"
@@ -45,7 +55,7 @@
             size="mini"
             type="primary"
             :disabled="scope.row.state === '已禁用'"
-            @click="handleDelete(scope.$index, scope.row)">操作</el-button>
+            @click="operate(scope.row)">操作</el-button>
       </template>
       </el-table-column>
       
@@ -67,7 +77,10 @@
             </el-form-item>
           </el-form> 
           <div v-show="isExecute">
-            浇水：<el-input-number></el-input-number> <el-button>执行</el-button>
+            <div v-for="(item, index) in service_list" :key="index" style="margin: 10px">
+               <span style="display:inline-block; width: 100px">{{item}}：</span><el-input-number size="mini"></el-input-number> <span class="unit" v-show="item === '浇水'">ml</span><span class="unit" v-show="item === '调高光照'">%</span><span class="unit" v-show="item === '调低光照'">%</span> <el-button @click="execute" size="mini">执行</el-button>
+            </div>
+           
           </div>
         </div>
       </div>
@@ -97,10 +110,46 @@ export default {
         name: '',
         type: '',
         thingModelId: '',
-      }
+      },
+      service_list: []
     }
   },
   methods: {
+    async operate(device) {
+      if(device.type === '传感器') {
+        this.$message({
+          message: '传感器信息采集成功！',
+          type: 'success'
+        });
+      }else {
+        await this.get_device_service(device.id);
+        this.isModalVisible = true;
+        this.isExecute = true;
+        
+      }
+    },
+
+    execute() {
+      this.$message({
+          message: '执行成功！',
+          type: 'success'
+        });
+      this.reset_form();
+    },
+
+    get_device_service(device_id) {
+      let self = this;
+      this.$axios.get('/thingModel/getDeviceThingModel', {
+        params: {
+          deviceId: device_id
+        }
+      }).then(function(res) {
+        console.log(res.data);
+        self.service_list = res.data;
+      }).catch(function(error) {
+        console.error(error);
+      })
+    },
     create_device() {
       let self = this;
       let userId = parseInt(localStorage.userId);
@@ -148,3 +197,23 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+
+  .unit {
+    display:inline-block;
+    width: 30px;
+  }
+</style>

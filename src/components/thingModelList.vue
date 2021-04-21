@@ -45,14 +45,16 @@
               <el-radio v-model="model_form.type" label="executor">执行器</el-radio>
             </el-form-item>
             <el-form-item label="物模型服务">
-              
+              <el-checkbox-group v-model="result_service_list" size="small">
+                <el-checkbox-button v-for="service in model_list" :label="service.name" :key="service.service_id">{{service.name}}</el-checkbox-button>
+              </el-checkbox-group>
             </el-form-item>
           </el-form>
         </div>
       </div>
       <div slot="footer">
         <el-button type="info" plain @click="reset_form">取消</el-button>
-        <el-button type="primary" plain>确定</el-button>
+        <el-button type="primary" plain @click="create_thing_model">确定</el-button>
       </div>
     </modal>
   </div>
@@ -72,12 +74,41 @@ export default {
         type: 'executor',
         service: []
       },
+      model_list: [
+        {
+          name: '浇水',
+          service_id: '0'
+        },
+        {
+          name: '调高光照',
+          service_id: '1'
+        },
+        {
+          name: '调低光照',
+          service_id: '2'
+        }],
+      result_service_list: [],
       isModalVisible: false,
       title: '创建物模型',
     }
   },
   methods: {
+    create_thing_model() {
+
+      console.log(this.result_service_list);
+
+      let id = parseInt(localStorage.userId);
+      let self = this;
+      this.$axios.post('/thingModel/addThingModel', {
+
+      }).then(function(res) {
+        self.result_service_list = [];
+      }).catch(function(error) {
+        console.error(error);
+      })
+    },
     reset_form() { 
+      this.result_service_list = [];
       this.isModalVisible = false;
       this.isCreate = false;
     },
