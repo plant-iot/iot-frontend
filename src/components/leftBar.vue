@@ -27,6 +27,10 @@
         <i class="el-icon-warning"></i>
         <span slot="title">数据告警</span>
       </el-menu-item>
+      <el-menu-item @click="dataAnalysis">
+        <i class="el-icon-setting"></i>
+        <span slot="title">数据分析</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -43,6 +47,9 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key);
       this.$emit("menuChange", key);
+    }
+    dataAnalysis() {
+      window.location.href = "../../static/data_analysis.html"
     }
   }
 }
