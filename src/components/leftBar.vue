@@ -47,7 +47,7 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key);
       this.$emit("menuChange", key);
-    }
+    },
     dataAnalysis() {
       window.location.href = "../../static/data_analysis.html"
     }
