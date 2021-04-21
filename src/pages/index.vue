@@ -1,6 +1,6 @@
 <template>
   <div>
-    <topBar></topBar> 
+    <topBar></topBar>
     <div class="back">
       <div style="height: 100px">
         <!-- 智能家用植物养护 IoT 平台 前端 -->
@@ -25,7 +25,7 @@
       </div>
     </div>
   </div>
-  
+
 </template>
 <script>
 import topBar from '../components/topBar'
@@ -38,14 +38,13 @@ import topBar from '../components/topBar'
           login_form: {
             id: "",
             password: "",
-          }       
+          }
         }
       },
       methods: {
         login() {
           let id = this.login_form.id;
           let password = this.login_form.password;
-
           let self = this;
           this.$axios.get('/user/login',{
             params: {
@@ -104,11 +103,11 @@ import topBar from '../components/topBar'
     border-radius: 50%;
     border: 1px solid gray;
   }
-  
+
   .login_btn:hover {
     cursor: pointer;
     border: 1px solid teal;
     color: teal;
   }
-  
+
 </style>

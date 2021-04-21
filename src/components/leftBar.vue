@@ -1,6 +1,6 @@
 <template>
   <div class="menu">
-  
+
     <el-menu
       default-active="1"
       class="el-menu-vertical-demo"
@@ -13,15 +13,15 @@
       <el-menu-item index="/mainPage">
         <i class="el-icon-menu"></i>
         <span slot="title">设备列表</span>
-        
+
       </el-menu-item>
       <el-menu-item index="/">
         <i class="el-icon-document"></i>
         <span slot="title">设备管理</span>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item index="/ruleEngine">
         <i class="el-icon-setting"></i>
-        <span slot="title">导航三</span>
+        <span slot="title">规则设置</span>
       </el-menu-item>
     </el-menu>
   </div>
