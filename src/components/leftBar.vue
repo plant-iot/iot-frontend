@@ -23,6 +23,10 @@
         <i class="el-icon-setting"></i>
         <span slot="title">规则设置</span>
       </el-menu-item>
+      <el-menu-item index="/ruleWarning">
+        <i class="el-icon-warning"></i>
+        <span slot="title">数据告警</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>

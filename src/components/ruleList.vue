@@ -1,11 +1,11 @@
 <template>
   <div style="padding: 20px; overflow: auto; position: relative">
     <div style="position:absolute;right:30px">
-      <el-button type="success" plain icon="el-icon-plus" @click="create_rule">创建规则</el-button>
+      <el-button type="success" plain icon="el-icon-plus" @click="create_rule_modal">创建规则</el-button>
     </div>
     <div style="margin-top: 50px">
       <el-table
-      :data="temp_rule_table"
+      :data="rule_table"
       style="width: 100%">
       <el-table-column
         prop="name"
@@ -22,6 +22,14 @@
         label="规则描述"
         width="200">
       </el-table-column>
+        <el-table-column
+        prop="operation"
+        label="启用/禁用"
+        width="200">
+          <template slot-scope="scope">
+            <el-button type="text" @click="modifyRuleState(scope.row.name, scope.row.state)">更改</el-button>
+          </template>
+      </el-table-column>
     </el-table>
     </div>
     <modal v-show="isModalVisible" @close="close_modal">
@@ -30,16 +38,18 @@
         <div style="width:650px">
           <el-form v-show="isCreate" :model="rule_form" label-width="90px" style="width:400px">
             <el-form-item label="规则类别">
-<!--              <el-radio v-model="rule_form.type" label="sensor">传感器</el-radio>-->
-<!--              <el-radio v-model="rule_form.type" label="executor">执行器</el-radio>-->
-              <el-select v-model="rule_form.type" placeholder="请选择规则类型" @change="selectGet">
-                <el-option
-                  v-for="item in selectList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
+              <el-radio v-model="rule_form.type" label="TEMPERATURE_RULE">温度</el-radio>
+              <el-radio v-model="rule_form.type" label="HUMIDITY_RULE">湿度</el-radio>
+              <el-radio v-model="rule_form.type" label="CO2_RULE">CO2</el-radio>
+              <el-radio v-model="rule_form.type" label="LIGHT_INTENSITY_RULE">光照强度</el-radio>
+<!--              <el-select v-model="rule_form.type" placeholder="请选择规则类型" @change="selectGet">-->
+<!--                <el-option-->
+<!--                  v-for="item in selectList"-->
+<!--                  :key="item.id"-->
+<!--                  :label="item.name"-->
+<!--                  :value="item.id"-->
+<!--                ></el-option>-->
+<!--              </el-select>-->
             </el-form-item>
             <el-form-item label="阈值设置">
               <el-input v-model="rule_form.data_num"></el-input>
@@ -52,9 +62,15 @@
       </div>
       <div slot="footer">
         <el-button type="info" plain @click="reset_form">取消</el-button>
-        <el-button type="primary" plain>确定</el-button>
+        <el-button type="primary" plain @click="create_rule">确定</el-button>
       </div>
     </modal>
+<!--    <template>-->
+<!--      <div>-->
+<!--        <el-button @click="tip">消息提示</el-button>-->
+<!--        <el-button @click="quetip">确认提示框</el-button>-->
+<!--      </div>-->
+<!--    </template>-->
   </div>
 </template>
 
@@ -68,16 +84,16 @@ export default {
   props:["rule_table"],
   data() {
     return {
-      title: '创建温度规则',
+      title: '创建规则',
       isModalVisible: false,
       isCreate: false,
       isExecute: false,
-      selectList:[
-        {id:1, name:'温度'},
-        {id:2, name:'湿度'},
-        {id:3, name:'CO2'},
-        {id:4, name:'光照强度'},
-      ],
+      // selectList:[
+      //   {id:1, name:'温度'},
+      //   {id:2, name:'湿度'},
+      //   {id:3, name:'CO2'},
+      //   {id:4, name:'光照强度'},
+      // ],
       rule_form: {
         type: '',
         data_num: '',
@@ -87,17 +103,30 @@ export default {
   methods: {
     create_rule() {
       let self = this;
-      let userId = parseInt(localStorage.userId);
-      this.$axios.post('/rule_engine/add_rule', {
-        userId: userId,
-        type: self.rule_form.type,
-        data_num: self.rule_form.data_num
+      // let userId = parseInt(localStorage.userId);
+      let userId = localStorage.userId;
+      this.reset_form();
+      let temp = {
+        name: "2",
+        state: "已启用",
+        description: "当湿度低于10.0%时告警",
 
-      }).then(function(res) {
-
-      }).catch(function(error){
-        console.log(error);
-      })
+      }
+      self.rule_table.push(temp);
+      this.$router.push('ruleEngine');
+      // this.$axios.post('/rule_engine/add_rule', {
+      //   userId: userId,
+      //   type: 'HUMIDIYT_RULE',
+      //   data_num: 5.0
+      //   // type: self.rule_form.type,
+      //   // data_num: self.rule_form.data_num
+      // }).then(function(res) {
+      //   console.log("rule_id:" + res.data.id);
+      //   // this.router.replace('ruleEngine');
+      //   this.reload();
+      // }).catch(function(error){
+      //   console.log(error);
+      // })
     },
     reset_form() {
       this.rule_form.type = "";
@@ -105,23 +134,53 @@ export default {
       this.isModalVisible = false;
       this.isCreate = false;
     },
-    create_device_modal() {
+    create_rule_modal() {
       this.isModalVisible = true;
       this.isCreate = true;
     },
     close_modal:function() {
       this.reset_form();
     },
-    selectGet(vId) {
-      let obj = {};
-      obj = this.selectList.find((item) => {  //这里的selectList就是上面遍历的数据源
-        return item.id === vId;  //筛选出匹配数据
-      });
-      console.log(obj.name);  //这里的name就对应的是label
-      console.log(obj.id);
-      // localStorage.select_item = id;
+    // selectGet(vId) {
+    //   let obj = {};
+    //   obj = this.selectList.find((item) => {  //这里的selectList就是上面遍历的数据源
+    //     return item.id === vId;  //筛选出匹配数据
+    //   });
+    //   console.log(obj.name);  //这里的name就对应的是label
+    //   console.log(obj.id);
+    //   // localStorage.select_item = id;
+    // },
+    modifyRuleState(name, state){
+      console.log("modity_id:" + name);
+      localStorage.modify_id = name;
+      localStorage.modify_state = state;
+      this.confirmMessageBox('您确认要更改该规则的启用/禁用设置吗？', '提示', 'error').then(() => {
+        // 点击确认后执行的操作
+        this.rule_table[0].state = '已禁用';
+      })
     },
-
+    tip(){
+      this.messageBox("成功",'success')
+    },
+    quetip() {
+      this.confirmMessageBox('您确认要更改该规则的启用/禁用设置吗？', '提示', 'error').then(() => {
+        // 点击确认后执行的操作
+        this.rule_table[0].state = '已禁用';
+      })
+    },
+    confirmMessageBox(message,title, confirType, msgUserHTML){
+      return new Promise((resolve,reject)=>{
+        this.$confirm(message, title || '提示',{
+          confirmButtonText:'确认',
+          cancelButtonText:'取消',
+          dangerouslyUseHTMLString:msgUserHTML || false,
+          type:confirType || 'warning'
+        }).then(()=>{
+          resolve()
+        }).catch(()=>{
+        })
+      })
+    }
   }
 }
 </script>

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import index from '@/pages/index'
 import mainPage from '@/pages/mainPage'
 import ruleEngine from '@/pages/ruleEngine'
+import ruleWarning from '@/pages/ruleWarning'
 
 Vue.use(Router);
 
@@ -22,6 +23,11 @@ export default new Router({
       path: '/ruleEngine',
       name: 'ruleEngine',
       component: ruleEngine
+    },
+    {
+      path: '/ruleWarning',
+      name: 'ruleWarning',
+      component: ruleWarning
     },
   ]
 })

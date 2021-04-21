@@ -40,35 +40,59 @@ export default {
       this.rule_table = [];
       let userId = this.userId;
       let self = this;
-      this.$axios.get('/rule_engine/show_all_rules', {
+      this.$axios.get('/rule_engine/show_all_rules_info', {
         params: {
           userId: userId
         }
       }).then(function(res) {
-        if(res.data == null){
-          let temp = {
-            id: "0",
-            name: "/",
-            state: "/",
-            description: "/",
-          }
-          self.rule_table.push(temp);
+        let temp = {
+          name: "1",
+          state: "已启用",
+          description: "当温度超过30℃时告警",
         }
-        else{
-          for(let data of res.data) {
-            let temp = {
-              id: data.id,
-              name: data.name,
-              state: data.state,
-              description: data.description,
-            }
-            self.rule_table.push(temp);
-          }
-        }
+        self.rule_table.push(temp);
+
+
+
+        // console.log("get_res")
+        // console.log(res.data[0].id)
+        // console.log(res.data[0].state)
+        // console.log(res.data[0].threshold_data)
+        // for(let data of res.data) {
+        //   console.log(data)
+        //   let temp = {
+        //     name: data.name,
+        //     state: data.state,
+        //     description: data.description,
+        //   }
+        //   self.rule_table.push(temp);
+        // }
+
+        // if(res.data == null || res.data.size() == 0){
+        //   let temp = {
+        //     id: "0",
+        //     name: "/",
+        //     state: "/",
+        //     description: "/",
+        //   }
+        //   self.rule_table.push(temp);
+        // }
+        // else{
+        //   for(let data of res.data) {
+        //     let temp = {
+        //       id: data.id,
+        //       name: data.name,
+        //       state: data.state,
+        //       description: data.description,
+        //     }
+        //     self.rule_table.push(temp);
+        //   }
+        // }
       }).catch(function(error) {
         console.log(error);
       })
-    }
+    },
+
   }
 }
 </script>
