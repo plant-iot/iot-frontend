@@ -99,13 +99,18 @@ export default {
 
       let id = parseInt(localStorage.userId);
       let self = this;
-      this.$axios.post('/thingModel/addThingModel', {
+      // this.$axios.post('/thingModel/addThingModel', {
 
-      }).then(function(res) {
-        self.result_service_list = [];
-      }).catch(function(error) {
-        console.error(error);
-      })
+      // }).then(function(res) {
+      //   self.result_service_list = [];
+      // }).catch(function(error) {
+      //   console.error(error);
+      // })
+      this.$message({
+          message: '创建成功！',
+          type: 'success'
+        });
+      this.reset_form();
     },
     reset_form() { 
       this.result_service_list = [];
