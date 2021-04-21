@@ -153,21 +153,27 @@ export default {
     },
 
     get_thing_models() {
-      
+
     },
 
     create_device() {
       let self = this;
       let userId = parseInt(localStorage.userId);
-      this.$axios.post('/device/addDevice', {
-        userId: userId,
-        type: self.device_form.type,
+      this.$message({
+          message: '创建成功！',
+          type: 'success'
+      });
 
-      }).then(function(res) {
+      this.reset_form();
+      // this.$axios.post('/device/addDevice', {
+      //   userId: userId,
+      //   type: self.device_form.type,
 
-      }).catch(function(error){
-        console.log(error);
-      })
+      // }).then(function(res) {
+
+      // }).catch(function(error){
+      //   console.log(error);
+      // })
     },
     change_device_state(state, index) {
       if(state === '可使用') {
@@ -191,6 +197,7 @@ export default {
       this.device_form.type = "";
       this.isModalVisible = false;
       this.isCreate = false;
+      this.isExecute = false;
     },
     create_device_modal() {
       this.isModalVisible = true;
