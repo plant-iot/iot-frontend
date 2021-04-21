@@ -16,9 +16,19 @@
         prop="type"
         label="设备类型"
         width="200">
+        <template  slot-scope="scope" >
+            <el-tag
+              v-show="scope.row.state === '可使用'"
+              :type="scope.row.type === '传感器' ? 'primary' : 'success'"
+              disable-transitions>{{scope.row.type}}</el-tag>
+            <el-tag
+              v-show="scope.row.state === '已禁用'"
+              type="info"
+              disable-transitions>{{scope.row.type}}</el-tag>
+          </template>
       </el-table-column>
       <el-table-column
-        prop="state"
+        prop="onOff"
         label="设备状态"
         width="200">
       </el-table-column>
@@ -26,6 +36,17 @@
         prop="operation"
         label="设备操作"
         width="200">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            @click="change_device_state(scope.row.state, scope.$index)"
+            ><span v-show="scope.row.state === '已禁用'">启用</span><span v-show="scope.row.state === '可使用'">禁用</span></el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            :disabled="scope.row.state === '已禁用'"
+            @click="handleDelete(scope.$index, scope.row)">操作</el-button>
+      </template>
       </el-table-column>
       
     </el-table>
@@ -46,7 +67,7 @@
             </el-form-item>
           </el-form> 
           <div v-show="isExecute">
-            浇水：<el-number></el-number> <el-button>执行</el-button>
+            浇水：<el-input-number></el-input-number> <el-button>执行</el-button>
           </div>
         </div>
       </div>
@@ -92,6 +113,23 @@ export default {
       }).catch(function(error){
         console.log(error);
       })
+    },
+    change_device_state(state, index) {
+      if(state === '可使用') {
+        this.disable_device(index);
+      } else{
+        this.enable_device(index);
+      }
+    },
+    disable_device(index) {
+      let device = this.device_table[index];
+      device.state = '已禁用';
+      this.$set(this.device_table, index, device);
+    },
+    enable_device(index) {
+      let device = this.device_table[index];
+      device.state = '可使用';
+      this.$set(this.device_table, index, device);
     },
     reset_form() { 
       this.device_form.name = "";

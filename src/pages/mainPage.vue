@@ -51,8 +51,10 @@ export default {
             id:data.id,
             name: data.name,
             type: data.type,
-            state: data.onOff
+            onOff: data.onOff,
+            state: data.state,
           }
+          console.log(data);
           self.device_table.push(temp);
         }
       }).catch(function(error) {
