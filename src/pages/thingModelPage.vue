@@ -7,7 +7,7 @@
           <leftBar></leftBar>
         </div>
         <div class="mask">
-          <thingModelList></thingModelList>
+          <thingModelList :model_table="model_table"></thingModelList>
         </div>
       </div>
     </div>
@@ -23,13 +23,42 @@ import thingModelList from '../components/thingmodelList';
 export default {
   name: 'thingModelPage',
   components: {topBar, leftBar, thingModelList},
+  mounted() {
+    this.get_model_list();
+  },
   data(){
     return {
-
+      model_table: []
     }
   },
   methods: {
-
+    get_model_list() {
+      let self = this;
+      let id = parseInt(localStorage.userId);
+      this.$axios.get('/thingModel/getThingModel', {
+        params: {
+          userId: id
+        }
+      }).then(function(res) {
+        console.log(res.data);
+        for(let data of res.data) {
+          let service_list = "";
+          for(let service of data.serviceList) {
+            service_list += service + "<br>";
+          }
+          console.log(service_list);
+          let temp = {
+            name: data.modelName,
+            type: data.deviceType,
+            model_id: data.modelId,
+            service_list: data.serviceList
+          }
+          self.model_table.push(temp);
+        }
+      }).catch(function(error) {
+        console.log(error)
+      })
+    }
   }
 
 }

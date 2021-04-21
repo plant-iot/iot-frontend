@@ -4,6 +4,7 @@ import index from '@/pages/index'
 import mainPage from '@/pages/mainPage'
 import ruleEngine from '@/pages/ruleEngine'
 import ruleWarning from '@/pages/ruleWarning'
+import thingModelPage from '@/pages/thingModelPage'
 
 Vue.use(Router);
 
@@ -29,5 +30,10 @@ export default new Router({
       name: 'ruleWarning',
       component: ruleWarning
     },
+    {
+      path: '/thingModelPage',
+      name: 'thingModelPage',
+      component: thingModelPage
+    }
   ]
 })

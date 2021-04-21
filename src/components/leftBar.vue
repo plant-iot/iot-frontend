@@ -15,7 +15,7 @@
         <span slot="title">设备列表</span>
 
       </el-menu-item>
-      <el-menu-item index="/">
+      <el-menu-item index="/thingModelPage">
         <i class="el-icon-document"></i>
         <span slot="title">设备管理</span>
       </el-menu-item>

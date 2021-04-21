@@ -1,4 +1,3 @@
-@@ -0,0 +1,97 @@
 <template>
   <div style="padding: 20px; overflow: auto; position: relative">
     <div style="position:absolute;right:30px">
@@ -11,12 +10,12 @@
       <el-table-column
         prop="name"
         label="物模型名称"
-        width="200">
+        width="250">
       </el-table-column>
       <el-table-column
         prop="type"
         label="物模型类型"
-        width="200">
+        width="250">
          <template  slot-scope="scope" >
             <el-tag
               :type="scope.row.type === '传感器' ? 'primary' : 'success'"
@@ -24,15 +23,12 @@
           </template>
       </el-table-column>
       <el-table-column
-        prop="onOff"
-        label="设备状态"
-        width="200">
-      </el-table-column>
-      <el-table-column
-        prop="operation"
+        prop="service_list"
         label="服务"
-        width="200">
-        
+        width="300">
+        <template slot-scope="scope">
+          <p v-for="(item, index) in scope.row.service_list" :key="index">{{item}}</p>
+        </template> 
       </el-table-column>
       
     </el-table>
@@ -46,8 +42,7 @@
               <el-input v-model="model_form.name"></el-input>
             </el-form-item>
             <el-form-item label="物模型类型">
-              <el-radio v-model="device_form.type" label="sensor">传感器</el-radio>
-              <el-radio v-model="device_form.type" label="executor">执行器</el-radio>
+              <el-radio v-model="model_form.type" label="executor">执行器</el-radio>
             </el-form-item>
             <el-form-item label="物模型服务">
               
@@ -74,7 +69,7 @@ export default {
     return {
       model_form: {
         name: '',
-        type: '',
+        type: 'executor',
         service: []
       },
       isModalVisible: false,
