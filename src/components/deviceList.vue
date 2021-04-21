@@ -87,7 +87,7 @@
       </div>
       <div slot="footer">
         <el-button type="info" plain @click="reset_form">取消</el-button>
-        <el-button type="primary" plain>确定</el-button>
+        <el-button type="primary" plain @click="create_device">确定</el-button>
       </div>
     </modal>
   </div>

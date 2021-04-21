@@ -40,7 +40,14 @@ export default {
       this.rule_table = [];
       let userId = this.userId;
       let self = this;
-      this.$axios.get('/rule_engine/show_all_rules_info', {
+
+      let temp = {
+          name: "1",
+          state: "已启用",
+          description: "当温度超过30℃时告警",
+        }
+        self.rule_table.push(temp);
+      /*this.$axios.get('/rule_engine/show_all_rules_info', {
         params: {
           userId: userId
         }
@@ -90,7 +97,7 @@ export default {
         // }
       }).catch(function(error) {
         console.log(error);
-      })
+      })*/
     },
 
   }
