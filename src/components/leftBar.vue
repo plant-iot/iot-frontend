@@ -49,7 +49,15 @@ export default {
       this.$emit("menuChange", key);
     },
     dataAnalysis() {
-      window.location.href = "../../static/data_analysis.html"
+      this.$axios.get('/deviceinfo/dataAnalysis').then(function (res) {
+        setTimeout(() => {
+          var tempwindow = window.open('_blank');
+          tempwindow.location = "../../static/data_analysis.html"
+          // window.location.href = "../../static/data_analysis.html"
+        }, 2000);
+      }).catch(function (error) {
+        console.log(error);
+      })
     }
   }
 }
