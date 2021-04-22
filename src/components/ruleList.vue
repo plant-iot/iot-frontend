@@ -42,14 +42,6 @@
               <el-radio v-model="rule_form.type" label="HUMIDITY_RULE">湿度</el-radio>
               <el-radio v-model="rule_form.type" label="CO2_RULE">CO2</el-radio>
               <el-radio v-model="rule_form.type" label="LIGHT_INTENSITY_RULE">光照强度</el-radio>
-<!--              <el-select v-model="rule_form.type" placeholder="请选择规则类型" @change="selectGet">-->
-<!--                <el-option-->
-<!--                  v-for="item in selectList"-->
-<!--                  :key="item.id"-->
-<!--                  :label="item.name"-->
-<!--                  :value="item.id"-->
-<!--                ></el-option>-->
-<!--              </el-select>-->
             </el-form-item>
             <el-form-item label="阈值设置">
               <el-input v-model="rule_form.data_num"></el-input>
@@ -65,12 +57,6 @@
         <el-button type="primary" plain @click="create_rule">确定</el-button>
       </div>
     </modal>
-<!--    <template>-->
-<!--      <div>-->
-<!--        <el-button @click="tip">消息提示</el-button>-->
-<!--        <el-button @click="quetip">确认提示框</el-button>-->
-<!--      </div>-->
-<!--    </template>-->
   </div>
 </template>
 
@@ -88,12 +74,6 @@ export default {
       isModalVisible: false,
       isCreate: false,
       isExecute: false,
-      // selectList:[
-      //   {id:1, name:'温度'},
-      //   {id:2, name:'湿度'},
-      //   {id:3, name:'CO2'},
-      //   {id:4, name:'光照强度'},
-      // ],
       rule_form: {
         type: '',
         data_num: '',
@@ -104,8 +84,9 @@ export default {
     create_rule() {
       let self = this;
       // let userId = parseInt(localStorage.userId);
-      let userId = localStorage.userId;
-      this.reset_form();
+      let userId = parseInt(localStorage.userId);
+
+      /*this.reset_form();
       let temp = {
         name: "2",
         state: "已启用",
@@ -113,20 +94,25 @@ export default {
 
       }
       self.rule_table.push(temp);
-      this.$router.push('ruleEngine');
-      // this.$axios.post('/rule_engine/add_rule', {
-      //   userId: userId,
-      //   type: 'HUMIDIYT_RULE',
-      //   data_num: 5.0
-      //   // type: self.rule_form.type,
-      //   // data_num: self.rule_form.data_num
-      // }).then(function(res) {
-      //   console.log("rule_id:" + res.data.id);
-      //   // this.router.replace('ruleEngine');
-      //   this.reload();
-      // }).catch(function(error){
-      //   console.log(error);
-      // })
+      this.$router.push('ruleEngine');*/
+
+      // console.log("data_num:" + self.rule_form.data_num);
+      let type = self.rule_form.type;
+      let data_num = self.rule_form.data_num;
+      console.log("data_num:" + self.rule_form.data_num);
+
+      this.$axios.post('/rule_engine/add_rule', {
+         userId: userId,
+         type: type,
+         data_num: data_num
+       }).then((res) => {
+         console.log("ret_rule_id:" + res.data);
+         // this.reset_form();
+         location.reload();
+
+       }).catch(function(error){
+         console.log(error);
+       })
     },
     reset_form() {
       this.rule_form.type = "";
@@ -141,22 +127,28 @@ export default {
     close_modal:function() {
       this.reset_form();
     },
-    // selectGet(vId) {
-    //   let obj = {};
-    //   obj = this.selectList.find((item) => {  //这里的selectList就是上面遍历的数据源
-    //     return item.id === vId;  //筛选出匹配数据
-    //   });
-    //   console.log(obj.name);  //这里的name就对应的是label
-    //   console.log(obj.id);
-    //   // localStorage.select_item = id;
-    // },
     modifyRuleState(name, state){
       console.log("modity_id:" + name);
       localStorage.modify_id = name;
       localStorage.modify_state = state;
       this.confirmMessageBox('您确认要更改该规则的启用/禁用设置吗？', '提示', 'error').then(() => {
         // 点击确认后执行的操作
-        this.rule_table[0].state = '已禁用';
+        // this.rule_table[0].state = '已禁用';
+
+        let rule_id = parseInt(localStorage.modify_id);
+        this.$axios.get('/rule_engine/modify_rule', {
+          params: {
+            id: rule_id,
+          }
+        }).then((res) => {
+          console.log("modify_rule " + rule_id + ":" + res.data);
+          // this.reset_form();
+          location.reload();
+
+        }).catch(function(error){
+          console.log(error);
+        })
+
       })
     },
     tip(){
@@ -180,7 +172,7 @@ export default {
         }).catch(()=>{
         })
       })
-    }
+    },
   }
 }
 </script>

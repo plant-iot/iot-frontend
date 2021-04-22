@@ -27,7 +27,7 @@ export default {
     this.userId = parseInt(localStorage.userId);
     // console.log("userId:" + this.userId);
     this.get_warning_list();
-    this.messageBox("向浇水设备发出启动信号！",'success');
+    // this.messageBox("向浇水设备发出启动信号！",'success');
   },
   data() {
     return {
@@ -39,17 +39,18 @@ export default {
     get_warning_list() {
       let userId = this.userId;
       let self = this;
-      this.$axios.get('/rule_engine/show_all_rules_info', {
+      this.$axios.get('/rule_engine/check_and_warn', {
         params: {
           userId: userId
         }
-      }).then(function(res) {
-        // this.messageBox("向浇水设备发出启动信号！",'success');
-        // this.confirmMessageBox('向浇水设备发出启动信号！', '提示', 'success').then(() => {
-        //   // 点击确认后执行的操作
-        //
-        // })
-        // this.alert("向浇水设备发出启动信号！");
+      }).then((res) => {
+        document.getElementById("temp_warn_id").innerHTML = res.data.temp_warn;
+        document.getElementById("humi_warn_id").innerHTML = res.data.humi_warn;
+        document.getElementById("co2_warn_id").innerHTML = res.data.co2_warn;
+        document.getElementById("light_warn_id").innerHTML = res.data.light_warn;
+        if(res.data.humi_warn != "暂无告警"){
+          this.messageBox("向浇水设备发出启动信号！",'success');
+        }
 
       }).catch(function(error) {
         console.log(error);
