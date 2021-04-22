@@ -21,7 +21,7 @@ humidity_frequency = {}  # 湿度频率统计
 temperature_descriptive_statistics = {'最小值': 1e9, '最大值': -1e9, '平均值': 0, '标准差': 0}
 humidity_descriptive_statistics = {'最小值': 1e9, '最大值': -1e9, '平均值': 0, '标准差': 0}
 for i in data:
-  if i[4] == 1:  # 温度传感器
+  if i[2] == 'TEMPERATURE':  # 温度传感器
     if i[3] > 100:
       invalid_temperature += 1
       continue
@@ -32,7 +32,7 @@ for i in data:
     temperature.append(i[3])
     temperature_descriptive_statistics['最小值'] = min(temperature_descriptive_statistics['最小值'], i[3])
     temperature_descriptive_statistics['最大值'] = max(temperature_descriptive_statistics['最大值'], i[3])
-  else:  # 湿度传感器
+  elif i[2] == 'HUMIDITY':  # 湿度传感器
     if i[3] > 100:
       invalid_humidity += 1
       continue
