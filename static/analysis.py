@@ -1,6 +1,10 @@
 import numpy as np
 import pymysql
 
+#文件路径
+path = r'C:\Users\YTMartian\Desktop\iot-frontend-main\static\\'
+
+
 conn = pymysql.connect(host='localhost', port=3306, user='root', password='root', database='iot_platform',
                        charset='utf8')
 sql = 'select * from data'
@@ -39,29 +43,28 @@ for i in data:
     humidity.append(i[3])
     humidity_descriptive_statistics['最小值'] = min(humidity_descriptive_statistics['最小值'], i[3])
     humidity_descriptive_statistics['最大值'] = max(humidity_descriptive_statistics['最大值'], i[3])
-temperature_descriptive_statistics['平均值'] = np.mean(temperature)
-temperature_descriptive_statistics['标准差'] = np.std(temperature, ddof=1)
-humidity_descriptive_statistics['平均值'] = np.mean(humidity)
-humidity_descriptive_statistics['标准差'] = np.std(humidity, ddof=1)
-
+if temperature:
+    temperature_descriptive_statistics['平均值'] = np.mean(temperature)
+    temperature_descriptive_statistics['标准差'] = np.std(temperature, ddof=1)
+if humidity:
+    humidity_descriptive_statistics['平均值'] = np.mean(humidity)
+    humidity_descriptive_statistics['标准差'] = np.std(humidity, ddof=1)
 accumulative_percentage = 0
 for key in temperature_frequency.keys():
-  temperature_frequency[key]['百分比'] = temperature_frequency[key]['频率'] / len(temperature) * 100
-  accumulative_percentage += temperature_frequency[key]['百分比']
-  temperature_frequency[key]['有效百分比'] = temperature_frequency[key]['频率'] / (
-    len(temperature) + invalid_temperature) * 100
-  temperature_frequency[key]['累积百分比'] = accumulative_percentage
+    temperature_frequency[key]['百分比'] = temperature_frequency[key]['频率'] / len(temperature) * 100
+    accumulative_percentage += temperature_frequency[key]['百分比']
+    temperature_frequency[key]['有效百分比'] = temperature_frequency[key]['频率'] / (
+      len(temperature) + invalid_temperature) * 100
+    temperature_frequency[key]['累积百分比'] = accumulative_percentage
 accumulative_percentage = 0
 for key in humidity_frequency.keys():
-  humidity_frequency[key]['百分比'] = humidity_frequency[key]['频率'] / len(humidity)
-  accumulative_percentage += humidity_frequency[key]['百分比']
-  humidity_frequency[key]['有效百分比'] = humidity_frequency[key]['频率'] / (len(humidity) + invalid_humidity)
-  humidity_frequency[key]['累积百分比'] = accumulative_percentage
-
-f = open('data_analysis_template.html', 'rb')
+    humidity_frequency[key]['百分比'] = humidity_frequency[key]['频率'] / len(humidity)
+    accumulative_percentage += humidity_frequency[key]['百分比']
+    humidity_frequency[key]['有效百分比'] = humidity_frequency[key]['频率'] / (len(humidity) + invalid_humidity)
+    humidity_frequency[key]['累积百分比'] = accumulative_percentage
+f = open(path + 'data_analysis_template.html', 'rb')
 out = f.read().decode('utf-8')
 f.close()
-
 out = out.replace('{temperature_valid}', str(len(temperature)))
 out = out.replace('{humidity_valid}', str(len(humidity)))
 out = out.replace('{temperature_invalid}', str(invalid_temperature))
@@ -94,6 +97,6 @@ for key in humidity_frequency.keys():
                                                                                    humidity_frequency[key]['累积百分比'])
 out = out.replace('{humidity_frequency}', row)
 
-f = open('data_analysis.html', 'w', encoding="utf-8")
+f = open(path + 'data_analysis.html', 'w', encoding="utf-8")
 f.write(out)
 f.close()
