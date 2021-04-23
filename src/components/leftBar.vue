@@ -15,7 +15,7 @@
         <span slot="title">设备列表</span>
 
       </el-menu-item>
-      <el-menu-item index="/">
+      <el-menu-item index="/thingModelPage">
         <i class="el-icon-document"></i>
         <span slot="title">设备管理</span>
       </el-menu-item>
@@ -26,6 +26,10 @@
       <el-menu-item index="/ruleWarning">
         <i class="el-icon-warning"></i>
         <span slot="title">数据告警</span>
+      </el-menu-item>
+      <el-menu-item @click="dataAnalysis">
+        <i class="el-icon-setting"></i>
+        <span slot="title">数据分析</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -43,6 +47,17 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key);
       this.$emit("menuChange", key);
+    },
+    dataAnalysis() {
+      this.$axios.get('/deviceinfo/dataAnalysis').then(function (res) {
+        setTimeout(() => {
+          var tempwindow = window.open('_blank');
+          tempwindow.location = "../../static/data_analysis.html"
+          // window.location.href = "../../static/data_analysis.html"
+        }, 2000);
+      }).catch(function (error) {
+        console.log(error);
+      })
     }
   }
 }
