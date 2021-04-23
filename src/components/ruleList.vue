@@ -9,7 +9,7 @@
       style="width: 100%">
       <el-table-column
         prop="name"
-        label="温度规则名称"
+        label="规则名称"
         width="200">
       </el-table-column>
       <el-table-column
