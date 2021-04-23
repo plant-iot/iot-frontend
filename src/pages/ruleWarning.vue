@@ -25,7 +25,7 @@ export default {
   components: {topBar, leftBar, warningList},
   mounted() {
     this.userId = parseInt(localStorage.userId);
-    // console.log("userId:" + this.userId);
+    // console.log("rule_warning--userId:" + this.userId);
     this.get_warning_list();
     // this.messageBox("向浇水设备发出启动信号！",'success');
   },
@@ -39,6 +39,7 @@ export default {
     get_warning_list() {
       let userId = this.userId;
       let self = this;
+      // console.log("before request--userId:" + userId);
       this.$axios.get('/rule_engine/check_and_warn', {
         params: {
           userId: userId
