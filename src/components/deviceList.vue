@@ -81,7 +81,8 @@
           </el-form> 
           <div v-show="isExecute">
             <div v-for="(item, index) in service_list" :key="index" style="margin: 10px">
-               <span style="display:inline-block; width: 100px">{{item}}：</span><el-input-number size="mini"></el-input-number> <span class="unit" v-show="item === '浇水'">ml</span><span class="unit" v-show="item === '调高光照'">%</span><span class="unit" v-show="item === '调低光照'">%</span> <el-button @click="execute" size="mini">执行</el-button>
+               <span>{{item}}：</span>({{executor_params[index]}}<span class="unit" v-show="item === '浇水'">ml</span><span class="unit" v-show="item === '调高光照'">%</span><span class="unit" v-show="item === '调低光照'">%</span><span class="unit" v-show="item === '施肥'">g</span>)
+               <el-slider style="width:70%" v-model="executor_params[index]"></el-slider>
             </div>
            
           </div>
@@ -114,6 +115,10 @@
           <el-button type="info" plain @click="reset_form">取消</el-button>
           <el-button type="primary" plain @click="create_device">确定</el-button>
         </div>
+        <div v-show="isExecute">
+          <el-button type="info" plain @click="reset_form">取消</el-button>
+          <el-button type="primary" plain @click="execute(executor_id)">执行</el-button>
+        </div>
         
       </div>
     </modal>
@@ -144,7 +149,9 @@ export default {
       executor_list: [],
       service_list: [],
       temp_log: [],
-      collect_table: []
+      collect_table: [],
+      executor_params: [],
+      executor_id: -1,
     }
   },
   methods: {
@@ -154,13 +161,13 @@ export default {
         this.collect(device.id);
         this.isCollect = true;
         this.isModalVisible = true;
-        this.title = "下发命令"
+        this.title = "采集数据"
       }else {
         await this.get_device_service(device.id);
         this.isModalVisible = true;
         this.isExecute = true;
-        this.title = "采集数据";
-        
+        this.title = "下发命令";
+        this.executor_id = device.id;
       }
     },
 
@@ -178,7 +185,7 @@ export default {
           end: ''
         }
       }).then(function(res) {
-        console.log(res.data);
+        // console.log(res.data);
         self.collect_table = res.data;
 
         //self.isCollect = true;
@@ -187,12 +194,33 @@ export default {
       }) 
     },
 
-    execute() {
-      this.$message({
-          message: '执行成功！',
-          type: 'success'
-        });
-      this.reset_form();
+    execute(device_id) {
+
+      let self = this;
+      this.$axios.post('/device/sendCommand', {
+        deviceId: device_id,
+        commands: self.service_list,
+        values: self.executor_params
+
+      }).then(function(res) {
+        let result = res.data;
+        if(result === "成功") {
+          self.$message({
+            message: '命令下发成功',
+            type: 'success'
+          });
+        }else {
+          self.$message.error("失败：" + result);
+        }
+        self.reset_form();
+      }).catch(function(error) {
+        console.error(error);
+      })
+      // this.$message({
+      //     message: '执行成功！',
+      //     type: 'success'
+      //   });
+      // this.reset_form();
     },
 
     get_device_service(device_id) {
@@ -334,11 +362,12 @@ export default {
       this.device_form.thingModel = 1;
       this.sensor_list = [];
       this.executor_list = [];
-      // this.temp_log = [];
+      this.executor_params = [];
       this.isModalVisible = false;
       this.isCreate = false;
       this.isExecute = false;
       this.isCollect = false;
+      this.executor_id = -1;
     },
     async create_device_modal() {
 
@@ -371,7 +400,7 @@ export default {
   }
 
   .unit {
-    display:inline-block;
-    width: 30px;
+    /* display:inline-block;
+    width: 30px; */
   }
 </style>

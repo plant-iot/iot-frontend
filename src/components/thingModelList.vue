@@ -87,6 +87,9 @@ export default {
         {
           name: '调低光照',
           service_id: '2'
+        },{
+          name: '施肥',
+          service_id: '3'
         }],
       isModalVisible: false,
       title: '创建物模型',
