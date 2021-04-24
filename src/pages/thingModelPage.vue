@@ -40,13 +40,8 @@ export default {
           userId: id
         }
       }).then(function(res) {
-        console.log(res.data);
+        
         for(let data of res.data) {
-          let service_list = "";
-          for(let service of data.serviceList) {
-            service_list += service + "<br>";
-          }
-          console.log(service_list);
           let temp = {
             name: data.modelName,
             type: data.deviceType,

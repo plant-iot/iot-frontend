@@ -5,7 +5,6 @@
       default-active="1"
       class="el-menu-vertical-demo"
       :router="routerBool"
-      @select="handleSelect"
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#ffd04b"
@@ -44,10 +43,10 @@ export default {
     }
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key);
-      this.$emit("menuChange", key);
-    },
+    // handleSelect(key, keyPath) {
+    //   // console.log(key);
+    //   this.$emit("menuChange", key);
+    // },
     dataAnalysis() {
       var tempwindow = window.open('_blank');
         tempwindow.location = this.$axios.defaults.baseURL + "/deviceinfo/dataAnalysis"
