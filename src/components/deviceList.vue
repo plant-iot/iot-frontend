@@ -85,11 +85,36 @@
             </div>
            
           </div>
+          <el-table
+            v-show="isCollect"
+            :data="collect_table"
+            style="width: 95%"
+            max-height="370"
+          >
+            <el-table-column
+              prop="dataType"
+              label="数据类型"
+              width="200">
+            </el-table-column>
+            <el-table-column
+              prop="value"
+              label="数值"
+              width="200">
+            </el-table-column>
+            <el-table-column
+              prop="time"
+              label="采集时间"
+              width="200">
+            </el-table-column>
+          </el-table>
         </div>
       </div>
       <div slot="footer">
-        <el-button type="info" plain @click="reset_form">取消</el-button>
-        <el-button type="primary" plain @click="create_device">确定</el-button>
+        <div v-show="isCreate">
+          <el-button type="info" plain @click="reset_form">取消</el-button>
+          <el-button type="primary" plain @click="create_device">确定</el-button>
+        </div>
+        
       </div>
     </modal>
   </div>
@@ -109,6 +134,7 @@ export default {
       isModalVisible: false,
       isCreate: false,
       isExecute: false,
+      isCollect: false,
       device_form: {
         name: '',
         type: '传感器',
@@ -118,21 +144,47 @@ export default {
       executor_list: [],
       service_list: [],
       temp_log: [],
+      collect_table: []
     }
   },
   methods: {
     async operate(device) {
       if(device.type === '传感器') {
-        this.$message({
-          message: '传感器信息采集成功！',
-          type: 'success'
-        });
+        
+        this.collect(device.id);
+        this.isCollect = true;
+        this.isModalVisible = true;
+        this.title = "下发命令"
       }else {
         await this.get_device_service(device.id);
         this.isModalVisible = true;
         this.isExecute = true;
+        this.title = "采集数据";
         
       }
+    },
+
+    collect(device_id) {
+      console.log(device_id);
+
+      let userId = parseInt(localStorage.userId);
+      let self = this;
+      this.$axios.get('/deviceinfo/getDataByFilter', {
+        params: {
+          userId: userId,
+          deviceId: device_id,
+          dataType: '',
+          start: '',
+          end: ''
+        }
+      }).then(function(res) {
+        console.log(res.data);
+        self.collect_table = res.data;
+
+        //self.isCollect = true;
+      }).catch(function(error) {
+        console.error(error);
+      }) 
     },
 
     execute() {
@@ -261,7 +313,7 @@ export default {
         console.error(error);
       })
     },
-    enable_device(index) {
+    enable_device(index, device_id) {
       let device = this.device_table[index];
       device.state = '可使用';
       this.$set(this.device_table, index, device);
@@ -286,6 +338,7 @@ export default {
       this.isModalVisible = false;
       this.isCreate = false;
       this.isExecute = false;
+      this.isCollect = false;
     },
     async create_device_modal() {
 
@@ -293,6 +346,7 @@ export default {
 
       this.isModalVisible = true;
       this.isCreate = true;
+      this.title = "创建设备"
     },
     close_modal:function() {
       this.reset_form();

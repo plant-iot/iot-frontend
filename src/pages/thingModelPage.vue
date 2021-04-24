@@ -25,6 +25,8 @@ export default {
   components: {topBar, leftBar, thingModelList},
   mounted() {
     this.get_model_list();
+
+    
   },
   data(){
     return {
