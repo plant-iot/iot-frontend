@@ -58,7 +58,7 @@ export default {
             state: data.state,
             log: log.itemList
           }
-          console.log(data);
+          // console.log(data);
           self.device_table.push(temp);
         }
       }).catch(function(error) {

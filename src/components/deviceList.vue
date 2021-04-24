@@ -50,7 +50,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="change_device_state(scope.row.state, scope.$index)"
+            @click="change_device_state(scope.row.state, scope.$index, scope.row.id)"
             ><span v-show="scope.row.state === '已禁用'">启用</span><span v-show="scope.row.state === '可使用'">禁用</span></el-button>
           <el-button
             size="mini"
@@ -116,7 +116,8 @@ export default {
       },
       sensor_list: [],
       executor_list: [],
-      service_list: []
+      service_list: [],
+      temp_log: [],
     }
   },
   methods: {
@@ -164,7 +165,6 @@ export default {
           userId: userId
         }
       }).then(function(res) {
-        console.log(res.data);
         
         for(let data of res.data) {
           let model = {
@@ -187,52 +187,94 @@ export default {
     create_device() {
       let self = this;
       let userId = parseInt(localStorage.userId);
-     
 
+      // console.log(this.device_form);
      
       this.$axios.post('/device/addDevice', {
         userId: userId,
-        name: self.device_form.name,
+        deviceName: self.device_form.name,
         type: self.device_form.type,
         modelId: self.device_form.thingModel
-      }).then(function(res) {
+      }).then(async function(res) {
 
-        let device = {
-          id: res.data,
-          name: self.device_form.name,
-          type: self.device_form.type,
-          state: '可使用',
-          onOff: '在线',
+        if(res.data < 0) {
+          return;
         }
-
-        self.$set(self.device_table, self.device_table.length, device);
-
-        self.$message({
-          message: '设备创建成功！',
-          type: 'success'
-        });
-        self.reset_form();
-
+        self.get_device_log(res.data);
       }).catch(function(error){
         console.log(error);
       })
     },
-    change_device_state(state, index) {
+
+    get_device_log(device_id) {
+      let self = this;
+      this.$axios.get('/deviceinfo/getDeviceLog', {
+        params: {
+          deviceId: device_id
+        }
+      }).then(function(res) {
+        console.log(res.data)
+        self.add_device_to_table(device_id, res.data.itemList)
+      }).catch(function(error) {
+        console.error(error);
+      })
+    },
+
+    add_device_to_table(device_id, log_list) {
+      let device = {
+          id: device_id,
+          name: this.device_form.name,
+          type: this.device_form.type,
+          state: '可使用',
+          onOff: '在线',
+          log: log_list
+        }
+
+        this.$set(this.device_table, this.device_table.length, device);
+
+        this.$message({
+          message: '设备创建成功！',
+          type: 'success'
+        });
+        this.reset_form();
+    },
+
+    change_device_state(state, index, device_id) {
       if(state === '可使用') {
-        this.disable_device(index);
+        this.disable_device(index, device_id);
       } else{
-        this.enable_device(index);
+        this.enable_device(index, device_id);
       }
     },
-    disable_device(index) {
+    disable_device(index, device_id) {
       let device = this.device_table[index];
       device.state = '已禁用';
       this.$set(this.device_table, index, device);
+
+      this.$axios.get('/device/disableDevice', {
+        params: {
+          deviceId: device_id
+        }
+      }).then(function(res) {
+
+      }).catch(function(error) {
+        console.error(error);
+      })
     },
     enable_device(index) {
       let device = this.device_table[index];
       device.state = '可使用';
       this.$set(this.device_table, index, device);
+
+      this.$axios.get('/device/enableDevice', {
+        params: {
+          deviceId: device_id
+        }
+      }).then(function(res) {
+
+      }).catch(function(error) {
+        console.error(error);
+      })
     },
     reset_form() { 
       this.device_form.name = "";
@@ -240,6 +282,7 @@ export default {
       this.device_form.thingModel = 1;
       this.sensor_list = [];
       this.executor_list = [];
+      // this.temp_log = [];
       this.isModalVisible = false;
       this.isCreate = false;
       this.isExecute = false;
