@@ -6,7 +6,8 @@
     <div style="margin-top: 50px">
       <el-table
       :data="model_table"
-      style="width: 100%">
+      style="width: 100%"
+      height="370">
       <el-table-column
         prop="name"
         label="物模型名称"
@@ -42,10 +43,10 @@
               <el-input v-model="model_form.name"></el-input>
             </el-form-item>
             <el-form-item label="物模型类型">
-              <el-radio v-model="model_form.type" label="executor">执行器</el-radio>
+              <el-radio v-model="model_form.type" label="执行器">执行器</el-radio>
             </el-form-item>
             <el-form-item label="物模型服务">
-              <el-checkbox-group v-model="result_service_list" size="small">
+              <el-checkbox-group v-model="model_form.service" size="small">
                 <el-checkbox-button v-for="service in model_list" :label="service.name" :key="service.service_id">{{service.name}}</el-checkbox-button>
               </el-checkbox-group>
             </el-form-item>
@@ -71,7 +72,7 @@ export default {
     return {
       model_form: {
         name: '',
-        type: 'executor',
+        type: '执行器',
         service: []
       },
       model_list: [
@@ -87,7 +88,6 @@ export default {
           name: '调低光照',
           service_id: '2'
         }],
-      result_service_list: [],
       isModalVisible: false,
       title: '创建物模型',
     }
@@ -95,31 +95,45 @@ export default {
   methods: {
     create_thing_model() {
 
-      console.log(this.result_service_list);
-
-      let id = parseInt(localStorage.userId);
+      let userId = parseInt(localStorage.userId);
+      console.log("id"+userId);
       let self = this;
-      // this.$axios.post('/thingModel/addThingModel', {
+      this.$axios.post('/thingModel/addThingModel', {
+        request: {
+          modelId: -1,
+          userId: userId,
+          modelName: self.model_form.name,
+          type: self.model_form.type,
+          services: self.model_form.service
+        }
+      }).then(function(res) {
 
-      // }).then(function(res) {
-      //   self.result_service_list = [];
-      // }).catch(function(error) {
-      //   console.error(error);
-      // })
-      this.$message({
-          message: '创建成功！',
+        let temp = {
+
+          model_id: res.data.modelId,
+          name: res.data.modelName,
+          type: res.data.deviceType,
+          service_list: res.data.serviceList
+        }
+        self.$set(self.model_table, self.model_table.length, temp);
+
+        self.$message({
+          message: '物模型创建成功！',
           type: 'success'
         });
-      this.reset_form();
+        self.reset_form();
+      }).catch(function(error) {
+        console.error(error);
+      })
+     
     },
     reset_form() { 
-      this.result_service_list = [];
+      this.model_form.name ="";
+      this.model_form.service = [];
       this.isModalVisible = false;
-      this.isCreate = false;
     },
     create_model_modal() {
       this.isModalVisible = true;
-      this.isCreate = true;
     },
     close_modal:function() {
       this.reset_form();

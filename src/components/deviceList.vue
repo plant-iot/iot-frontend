@@ -6,7 +6,8 @@
     <div style="margin-top: 50px">
       <el-table
       :data="device_table"
-      style="width: 100%">
+      style="width: 100%"
+      height="370">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
@@ -70,11 +71,12 @@
               <el-input v-model="device_form.name"></el-input>
             </el-form-item>
             <el-form-item label="设备类别">
-              <el-radio v-model="device_form.type" label="sensor">传感器</el-radio>
-              <el-radio v-model="device_form.type" label="executor">执行器</el-radio>
+              <el-radio v-model="device_form.type" label="传感器">传感器</el-radio>
+              <el-radio v-model="device_form.type" label="执行器">执行器</el-radio>
             </el-form-item>
             <el-form-item label=物模型模板>
-              <el-radio v-for="(item, index) in service_list" :key="index" v-model="thingModel" :label="item">{{item}}</el-radio>
+              <el-radio v-show="device_form.type === '传感器'" v-for="model in sensor_list" :key="model.modelId" v-model="device_form.thingModel" :label="model.modelId">{{model.name}}</el-radio>
+              <el-radio v-show="device_form.type === '执行器'" v-for="model in executor_list" :key="model.modelId" v-model="device_form.thingModel" :label="model.modelId">{{model.name}}</el-radio>
             </el-form-item>
           </el-form> 
           <div v-show="isExecute">
@@ -109,9 +111,11 @@ export default {
       isExecute: false,
       device_form: {
         name: '',
-        type: '',
-        thingModel: '',
+        type: '传感器',
+        thingModel: 1,
       },
+      sensor_list: [],
+      executor_list: [],
       service_list: []
     }
   },
@@ -153,27 +157,65 @@ export default {
     },
 
     get_thing_models() {
+      let userId = parseInt(localStorage.userId);
+      let self = this;
+      this.$axios.get('/thingModel/getThingModel', {
+        params: {
+          userId: userId
+        }
+      }).then(function(res) {
+        console.log(res.data);
+        
+        for(let data of res.data) {
+          let model = {
+            modelId: data.modelId,
+            name: data.modelName,
+            type: data.deviceType,
+          };
 
+          if(model.type === "传感器") {
+            self.sensor_list.push(model);
+          }else {
+            self.executor_list.push(model);
+          }
+        }
+      }).catch(function(error) {
+        console.error(error);
+      })
     },
 
     create_device() {
       let self = this;
       let userId = parseInt(localStorage.userId);
-      this.$message({
-          message: '创建成功！',
+     
+
+     
+      this.$axios.post('/device/addDevice', {
+        userId: userId,
+        name: self.device_form.name,
+        type: self.device_form.type,
+        modelId: self.device_form.thingModel
+      }).then(function(res) {
+
+        let device = {
+          id: res.data,
+          name: self.device_form.name,
+          type: self.device_form.type,
+          state: '可使用',
+          onOff: '在线',
+        }
+
+        self.$set(self.device_table, self.device_table.length, device);
+
+        self.$message({
+          message: '设备创建成功！',
           type: 'success'
-      });
+        });
+        self.reset_form();
 
-      this.reset_form();
-      // this.$axios.post('/device/addDevice', {
-      //   userId: userId,
-      //   type: self.device_form.type,
-
-      // }).then(function(res) {
-
-      // }).catch(function(error){
-      //   console.log(error);
-      // })
+      }).catch(function(error){
+        console.log(error);
+      })
     },
     change_device_state(state, index) {
       if(state === '可使用') {
@@ -194,12 +236,18 @@ export default {
     },
     reset_form() { 
       this.device_form.name = "";
-      this.device_form.type = "";
+      this.device_form.type = "传感器";
+      this.device_form.thingModel = 1;
+      this.sensor_list = [];
+      this.executor_list = [];
       this.isModalVisible = false;
       this.isCreate = false;
       this.isExecute = false;
     },
-    create_device_modal() {
+    async create_device_modal() {
+
+      await this.get_thing_models();
+
       this.isModalVisible = true;
       this.isCreate = true;
     },
